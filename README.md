@@ -48,3 +48,16 @@ This framework is currently under review and has been made available in this rep
    ```bash
    cd 3D-CIMlet
    python3 main.py
+
+## Citation
+
+Please use the following citation for this work:
+```
+@inproceedings{du20253dcimlet,
+  title ={3D-CIMlet: A Chiplet Co-Design Framework for Heterogeneous In-Memory Acceleration of Edge LLM Inference and Continual Learning},
+  author ={Du, Shuting and Zheng, Luqi and Parvathy, Aradhana and Xie, Feifan and Wei, Tiwei and Raghunathan, Anand and Li, Haitong},
+  booktitle ={Proceedings of the 62nd ACM/IEEE Design Automation Conference (DAC)},
+  year ={2025 (to appear)}
+}
+```
+>  *Note: This paper has been accepted to DAC 2025. The citation will be updated with official publication details (DOI, pages, etc.) after the conference. Please stay tuned!*
