@@ -360,7 +360,7 @@ def get_static_chiplet_layers(config,net_structure,net_structure_layer_def,Num_S
 
 def get_dest_layers(config,net_structure,netStructure_layer_def):
     num_T_head = config.num_T_head
-    if any(keyword in config.model_filename for keyword in ("Transformer_inf", "BERT_base_inf")):
+    if any(keyword in config.model_filename for keyword in ("Transformer_inf", "BERT_base_inf","BERT_small_inf")):
         num_layers_per_T_layer = 3+ num_T_head*2 +3
         dest_layers = [[] for _ in range(len(net_structure))]
         to_bp_dest_layers = [[] for _ in range(len(net_structure))] # only init, not used in adapter_inf
@@ -392,37 +392,6 @@ def get_dest_layers(config,net_structure,netStructure_layer_def):
     
     # if any(keyword in config.model_filename for keyword in ("Gpt2_inf")):
     if config.model_filename.startswith("Gpt2_inf"):
-        num_layers_per_T_layer = 3+ num_T_head*2 +2 # no head concat layer
-        dest_layers = [[] for _ in range(len(net_structure))]
-        to_bp_dest_layers = [[] for _ in range(len(net_structure))] # only init, not used in adapter_inf
-        num_to_bp_transfer_byte_to_layer = [0 for _ in range(len(net_structure))] # only init, not used in adapter_inf
-        for layer in range(len(net_structure)):
-            # generate K,Q
-            if ((layer % num_layers_per_T_layer == 0)and(layer != len(net_structure)-1)) or (layer % num_layers_per_T_layer == 1):
-                for head in range(num_T_head):
-                    dest_layers[layer].append(3+head*2 + math.floor(layer/num_layers_per_T_layer)*num_layers_per_T_layer)
-            # generate V
-            if (layer % num_layers_per_T_layer == 2):
-                for head in range(num_T_head):
-                    dest_layers[layer].append(2+head*2 + layer)      
-            # K.QT        
-            if (0 <= ((layer % num_layers_per_T_layer)-3)/2 <num_T_head) and ( ((layer % num_layers_per_T_layer)-3)%2 ==0):
-                dest_layers[layer].append(1 + layer)
-            # K.QT * V
-            if (0 <= ((layer % num_layers_per_T_layer)-3)/2 <num_T_head) and ( ((layer % num_layers_per_T_layer)-3)%2 ==1):
-                dest_layers[layer].append(math.floor(layer/num_layers_per_T_layer)*num_layers_per_T_layer + num_layers_per_T_layer-2)
-            # ff1
-            if (layer % num_layers_per_T_layer == num_layers_per_T_layer-2):
-                dest_layers[layer].append(layer+1)
-            # ff2, then to next Transformer layer or final output classification
-            if (layer % num_layers_per_T_layer == num_layers_per_T_layer-1):
-                dest_layers[layer].append(layer+1)
-            # final output classification weight, also last layer of whole model, go to the first layer
-            if (layer % num_layers_per_T_layer == 0) and (layer == len(net_structure)-1):
-                dest_layers[layer].append(0)
-    
-    # if any(keyword in config.model_filename for keyword in ("Gpt2_inf")):
-    if config.model_filename.startswith("Gpt2_inf_new"):
         num_layers_per_T_layer = 3+ num_T_head*2 +3 # w/ head concat layer
         dest_layers = [[] for _ in range(len(net_structure))]
         to_bp_dest_layers = [[] for _ in range(len(net_structure))] # only init, not used in adapter_inf
@@ -430,45 +399,27 @@ def get_dest_layers(config,net_structure,netStructure_layer_def):
         for layer in range(len(net_structure)):
             # generate K,Q
             if ((layer % num_layers_per_T_layer == 0)and(layer != len(net_structure)-1)) or (layer % num_layers_per_T_layer == 1):
-                # print("case1:")
-                # print("layer:",layer)
                 for head in range(num_T_head):
-                    # print("head:",head)
-                    # print("dest:",3+head*2 + math.floor(layer/num_layers_per_T_layer)*num_layers_per_T_layer)
                     dest_layers[layer].append(3+head*2 + math.floor(layer/num_layers_per_T_layer)*num_layers_per_T_layer)
             # generate V
             if (layer % num_layers_per_T_layer == 2):
-                # print("case2:")
-                # print("layer:",layer)
                 for head in range(num_T_head):
                     dest_layers[layer].append(2+head*2 + layer)      
             # K.QT        
             if (0 <= ((layer % num_layers_per_T_layer)-3)/2 <num_T_head) and ( ((layer % num_layers_per_T_layer)-3)%2 ==0):
-                # print("case3:")
-                # print("layer:",layer)
                 dest_layers[layer].append(1 + layer)
             # K.QT * V
             if (0 <= ((layer % num_layers_per_T_layer)-3)/2 <num_T_head) and ( ((layer % num_layers_per_T_layer)-3)%2 ==1):
-                # print("case4:")
-                # print("layer:",layer)
                 dest_layers[layer].append(math.floor(layer/num_layers_per_T_layer)*num_layers_per_T_layer + num_layers_per_T_layer-2)
             # ff1
             if (layer % num_layers_per_T_layer == num_layers_per_T_layer-2):
-                # print("case5:")
-                # print("layer:",layer)
                 dest_layers[layer].append(layer+1)
             # ff2, then to next Transformer layer or final output classification
             if (layer % num_layers_per_T_layer == num_layers_per_T_layer-1):
-                # print("case6:")
-                # print("layer:",layer)
                 dest_layers[layer].append(layer+1)
             # final output classification weight, also last layer of whole model, go to the first layer
             if (layer % num_layers_per_T_layer == 0) and (layer == len(net_structure)-1):
-                # print("case7:")
-                # print("layer:",layer)
-                dest_layers[layer].append(0)
-        
-        # print("dest_layers:",dest_layers)    
+                dest_layers[layer].append(0)   
     
     # if any(keyword in config.model_filename for keyword in ("DeiT_inf")):
     if config.model_filename.startswith("DeiT_inf"):
@@ -518,7 +469,7 @@ def get_dest_layers(config,net_structure,netStructure_layer_def):
         
         # print("dest_layers:",dest_layers)
     
-    elif any(keyword in config.model_filename for keyword in ("Transformer_adapter_inf", "BERT_base_adapter_inf")):
+    elif any(keyword in config.model_filename for keyword in ("Transformer_adapter_inf", "BERT_base_adapter_inf","BERT_small_adapter_inf")):
         num_layers_per_T_layer = 3+ num_T_head*2 +3 +4
         dest_layers = [[] for _ in range(len(net_structure))]
         to_bp_dest_layers = [[] for _ in range(len(net_structure))] # only init, not used in adapter_inf
@@ -817,7 +768,7 @@ def get_dest_layers(config,net_structure,netStructure_layer_def):
         # print("dest_layers:",dest_layers)
         # print("to_bp_dest_layers:",to_bp_dest_layers)
     
-    elif any(keyword in config.model_filename for keyword in ("Transformer_ft", "BERT_base_ft")):
+    elif any(keyword in config.model_filename for keyword in ("Transformer_ft", "BERT_base_ft","BERT_small_ft")):
         match = re.search(r'_(\d+)layer', config.model_filename)
         if match:
             T_layer = int(match.group(1))
