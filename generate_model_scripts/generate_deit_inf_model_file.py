@@ -19,12 +19,8 @@ data = [first_row]
 row = [token_len, dim, dim, dim, token_len, dim, 0, 0, "Token Generation,"]
 data.append(row)
 for i in range(1, num_file_row+1):
-    # if ((i%num_onelayer_row == 1 and i != num_file_row) or i%num_onelayer_row == 2 or i%num_onelayer_row == 3 ):  # K,Q,V projection
     if ((i%num_onelayer_row == 1 and i != num_file_row) or i%num_onelayer_row == 2 or i%num_onelayer_row == 3):  # K, V projection
-        row = [token_len, dim, dim, dim, token_len, dim, 0, 0, "K,Q,V projection,"]  ## 3 of these multiplications right? 
-    # elif (i%num_onelayer_row == 3):
-    #     if 'Gpt2' in model_type:
-    #         row = [1, dim, dim, dim, 1, dim, 0, 0, "Q projection,"]
+        row = [token_len, dim, dim, dim, token_len, dim, 0, 0, "K,Q,V projection,"]
     elif ((3 < i%num_onelayer_row < num_onelayer_row-2) and (i%2 == 0)):  # KQ softmax
         row = [token_len, dim_head, dim_head, token_len, token_len, token_len, 1, 1,"K.Q,"]
     elif ((3 < i%num_onelayer_row < num_onelayer_row-2) and (i%2 == 1)):  # KQ softmax * V

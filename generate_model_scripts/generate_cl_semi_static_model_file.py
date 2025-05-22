@@ -9,7 +9,7 @@ df = pd.read_csv(file_path, header=None)
 match = re.match(r'(.*)_\d+layer', file_path.split('/')[-1])
 
 if match:
-    model_type = match.group(1)  # Extract "Transformer_adapter_inf"
+    model_type = match.group(1)
     
     # Replace "inf" with "cl"
     new_model_type = model_type.replace("inf", "cl_semi_static")
