@@ -1,6 +1,6 @@
 # 3D-CIMlet
 
-3D-CIMlet: A Chiplet Co-Design Framework for Heterogeneous In-Memory Acceleration of Edge LLM Inference and Continual Learning
+3D-CIMlet is a chiplet co-Design framework for teterogeneous in-memory acceleration of edge LLM inference and continual learning, developed by [Prof. Haitong Li's group](https://engineering.purdue.edu/NanoX/) (Purdue University). . The framework is made publicly available on a non-commercial basis. Copyright of the framework is maintained by the developers, and is distributed under the terms of the BSD-3-Clause License.
 
 <!-- ---
 
@@ -37,7 +37,6 @@ This framework is currently under review and has been made available in this rep
 
 ### Environment Setup
 
-<!-- - Python 3.8+ -->
 To run this project, make sure you have [Anaconda](https://www.anaconda.com/) or [Miniconda](https://docs.conda.io/en/latest/miniconda.html) installed.
 Then follow these steps to set up the environment:
 

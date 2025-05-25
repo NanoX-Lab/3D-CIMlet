@@ -1,7 +1,5 @@
 import numpy as np
-import math
-import os
-import shutil
+import math,os,shutil
 
 def generate_traces_noc(config, num_pes_each_layer, num_in_eachLayer, chiplet_layers, dest_layers,  layer_location_begin_chiplet, netname, chiplet_size, num_chiplets, scale):
 
