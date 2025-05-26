@@ -24,6 +24,8 @@ new_data.append(first_row)
 
 # Iterate over the penultimate line of the source file to generate the corresponding new line
 # for new generated rows, if weights are stored in dynamic chip, row[6] is 1.
+# each row: [0]input token length, [1]input hidden dim, [2]weight hidden dim height, [3]weight hidden dim width, 
+#           [4]weight hidden dim height, [5]weight hidden dim width, [6]static(0)/dynamic(1)/semi-dynamic(2), [7]followed w/ softmax(1) or not(0), [8] operation description
 for i in range(len(df)):
     # Get the data of the penultimate i+1 row
     row = df.iloc[-(i+1)]

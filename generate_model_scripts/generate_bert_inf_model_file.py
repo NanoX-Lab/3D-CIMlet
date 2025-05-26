@@ -17,6 +17,8 @@ first_row = ['model_type', model_type] + [0] * 7
 # Initialize an empty list for storing all rows
 data = [first_row]
 
+# each row: [0]input token length, [1]input hidden dim, [2]weight hidden dim height, [3]weight hidden dim width, 
+#           [4]weight hidden dim height, [5]weight hidden dim width, [6]static(0)/dynamic(1)/semi-dynamic(2), [7]followed w/ softmax(1) or not(0), [8] operation description
 for i in range(1, num_file_row+1):
     if ((i%num_onelayer_row == 1 and i != num_file_row) or i%num_onelayer_row == 2 or i%num_onelayer_row == 3 ):  # K,Q,V projection
         row = [token_len, dim, dim, dim, token_len, dim, 0, 0, "K,Q,V projection,"]

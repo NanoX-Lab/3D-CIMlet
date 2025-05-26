@@ -56,9 +56,13 @@ Then follow these steps to set up the environment:
 1. Get the framework from GitHub:
    ```bash
    git clone https://github.com/NanoX-Lab/3D-CIMlet.git
-2. Go to the 3D-CIMlet folder, check the configuration in config.py and run main.py:
+2. Go to the 3D-CIMlet folder, use the example model files in 3D-CIMlet/models or choose a model generation template in 3D-CIMlet/generate_model_scripts to generate self-defined model file (.CSV), and check the configuration in config.py:
    ```bash
    cd 3D-CIMlet
+   python3 generate_model_scripts/[model_generation_template].py (optional)  
+
+3. Run main.py for simulation:
+   ```bash
    python3 main.py
 
 ## Citation
