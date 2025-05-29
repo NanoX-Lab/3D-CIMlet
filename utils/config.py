@@ -139,8 +139,8 @@ class Config:
 
 		self.pe_bus_width_2D = 256 # SIAM: 32
 		self.chiplet_bus_width_2D = 32 # SIAM: 8,16,32
-		self.scale_noc = 10000 # SIAM: 100
-		self.scale_nop = 1000 # SIAM: 10
+		self.scale_noc = 100 # used in booksim, change to a larger number if NOC simulation is slow.
+		self.scale_nop = 10 # used in booksim, change to a larger number if NOP simulation is slow.
 		
 		AR = 0
 		Rho = 0

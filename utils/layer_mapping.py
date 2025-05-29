@@ -29,7 +29,6 @@ def get_layer_energy_latency(row,config,technode,chiplet_type,memory_cell_type):
     
     clk_freq = getattr(config, f'{memory_cell_type}_clk_freq')
     
-    # num_used_pe_row = ceil(row[2] / (pe_height * subarray_height))
     num_used_pe_row = (row[2] / (pe_height * subarray_height))
     num_used_pe_col = math.ceil(row[3]*config.BitWidth_weight / (pe_width * subarray_width))
     num_used_pe = num_used_pe_row * num_used_pe_col
@@ -86,7 +85,7 @@ def get_layer_energy_latency(row,config,technode,chiplet_type,memory_cell_type):
     max_read_latency_output_pe_htree = 0
 
     # get all kinds of latency: pe level, assume all pes work simultaneously, get the max value of one pe.
-    num_used_pe_row = math.ceil(num_used_pe_row) ## new
+    num_used_pe_row = math.ceil(num_used_pe_row)
 
     for pe_row_idx in range(num_used_pe_row):
         for pe_col_idx in range(num_used_pe_col):
@@ -142,6 +141,7 @@ def get_layer_energy_latency(row,config,technode,chiplet_type,memory_cell_type):
             # read output
             # num_bit_read_pe = pe.used_pe_width * subarray_width * row[0] * config.BitWidth_in
             num_bit_read_pe = pe.used_pe_width * subarray_width * row[0]
+            num_bit_read_pe_for_energy = num_used_subarray * subarray_width * row[0]
             # -----read output latency
             read_latency_output_pe = 0
             # read_latency_output_subarrayArray = num_bit_read_pe / config.subarray_readout_mux * 1/clk_freq
@@ -160,9 +160,9 @@ def get_layer_energy_latency(row,config,technode,chiplet_type,memory_cell_type):
             # read_latency_output_pe += read_latency_output_pe_htree ### htree
             # -----read output energy
             read_energy_output_pe = 0
-            read_energy_output_subarrayArray = num_bit_read_pe * pe.subarray.read_energy_per_bit
+            read_energy_output_subarrayArray = num_bit_read_pe_for_energy * pe.subarray.read_energy_per_bit
             read_energy_output_subarrayShiftAdd = (row[0] * config.BitWidth_in) * pe.subarray.shiftadd.energy_per_bit
-            read_energy_output_subarraytoPeBuffer = num_bit_read_pe * pe.buffer.get_energy_per_bit(config)[0]
+            read_energy_output_subarraytoPeBuffer = num_bit_read_pe_for_energy * pe.buffer.get_energy_per_bit(config)[0]
             read_energy_output_subarray = read_energy_output_subarrayArray + read_energy_output_subarrayShiftAdd + read_energy_output_subarraytoPeBuffer
 
             read_energy_output_peAcc = (row[0] * pe.used_pe_height * pe.used_pe_width * config.BitWidth_in) * pe.accumulator.energy_per_bit
@@ -176,7 +176,7 @@ def get_layer_energy_latency(row,config,technode,chiplet_type,memory_cell_type):
             # -----if read output need softmax, latency and energy
             if row[7]: # have softmax operation, need sfu
                 read_latency_output_peSfu = (row[4]*row[5]) * pe.sfu.latency_per_byte
-                read_energy_output_peSfu = (row[4]*row[5]) * pe.sfu.get_energy_per_byte()
+                read_energy_output_peSfu = (row[4]*row[5]) * pe.sfu.get_energy_per_byte() / (num_used_pe if num_used_pe > 1 else 1)
                 # read_latency_output_pe += read_latency_output_peSfu
                 read_energy_output_pe += read_energy_output_peSfu
 
