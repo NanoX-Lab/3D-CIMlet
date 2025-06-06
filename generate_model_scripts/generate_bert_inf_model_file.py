@@ -12,13 +12,22 @@ num_onelayer_row = 3+ head*2 +3
 num_file_row = num_onelayer_row * model_layer +1 # +1: final output weight after all layers
 model_type = 'BERT_base_inf'
 # Define the first line of customization
-first_row = ['model_type', model_type] + [0] * 7
+first_row = ['input token length', 
+             'input hidden dim', 
+             'weight height',
+             'weight hidden width',
+             'output height',
+             'output width',
+             'operation type',
+             'followed by softmax',
+             'operation description'
+             ]
 
 # Initialize an empty list for storing all rows
 data = [first_row]
 
 # each row: [0]input token length, [1]input hidden dim, [2]weight hidden dim height, [3]weight hidden dim width, 
-#           [4]weight hidden dim height, [5]weight hidden dim width, [6]static(0)/dynamic(1)/semi-dynamic(2), [7]followed w/ softmax(1) or not(0), [8] operation description
+#           [4]output hidden dim height, [5]output hidden dim width, [6]static(0)/dynamic(1)/semi-dynamic(2), [7]followed by softmax(1) or not(0), [8] operation description
 for i in range(1, num_file_row+1):
     if ((i%num_onelayer_row == 1 and i != num_file_row) or i%num_onelayer_row == 2 or i%num_onelayer_row == 3 ):  # K,Q,V projection
         row = [token_len, dim, dim, dim, token_len, dim, 0, 0, "K,Q,V projection,"]

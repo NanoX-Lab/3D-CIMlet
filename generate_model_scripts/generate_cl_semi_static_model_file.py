@@ -19,7 +19,16 @@ if match:
 
 # Initialize a new list to store bp data
 new_data = []
-first_row = ['model_type', new_model_type] + [0] * 7
+first_row = ['input token length', 
+             'input hidden dim', 
+             'weight height',
+             'weight hidden width',
+             'output height',
+             'output width',
+             'operation type',
+             'followed by softmax',
+             'operation description'
+             ]
 new_data.append(first_row)
 
 # Iterate over the penultimate line of the source file to generate the corresponding new line

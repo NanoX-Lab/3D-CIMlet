@@ -12,7 +12,16 @@ num_onelayer_row = 3+ head*2 +3
 num_file_row = (3+ head*2 +3) * model_layer +1 # +1: final output weight after all layers
 model_type = 'DeiT_inf'
 # Define the first line of customization
-first_row = ['model_type', model_type] + [0] * 7
+first_row = ['input token length', 
+             'input hidden dim', 
+             'weight height',
+             'weight hidden width',
+             'output height',
+             'output width',
+             'operation type',
+             'followed by softmax',
+             'operation description'
+             ]
 
 # Initialize an empty list for storing all rows
 data = [first_row]

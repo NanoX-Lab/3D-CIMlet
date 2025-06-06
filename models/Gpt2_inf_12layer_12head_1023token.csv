@@ -1,4 +1,4 @@
-model_type,Gpt2_inf_new,0,0,0,0,0,0,0
+input token length,input hidden dim,weight height,weight hidden width,output height,output width,operation type,followed by softmax,operation description
 1,768,768,768,1,768,0,0,"K, V projection,"
 1,768,768,768,1,768,0,0,"Q projection,"
 1,768,768,768,1,768,0,0,"K, V projection,"

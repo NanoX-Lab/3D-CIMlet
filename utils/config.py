@@ -3,7 +3,7 @@ import math
 
 class Config:
 	def __init__(self):
-		self.model_filename = os.path.join('models', 'BERT_base_inf_12layer_12head_128token.csv')
+		self.model_filename = os.path.join('models', 'BERT_base_adapter_cl_semi_static_12layer_12head_128token')
 		self.net_name = os.path.splitext(os.path.basename(self.model_filename))[0]
 		self.num_T_head = int(re.findall(r'(\d+)head', self.model_filename)[0])
 		self.train_batch_size = 16
@@ -352,11 +352,16 @@ class Config:
 			with open(self.model_filename, mode='r', newline='') as file:
 				csv_reader = csv.reader(file)
 				first_row = next(csv_reader)  # Read the first line to determine the model type
-				if (first_row[1] in [
+				# if (first_row[1] in [
+        		# 		"Transformer_inf","Transformer_adapter_inf","Transformer_adapter_cl","Transformer_ft",
+                #         "BERT_base_inf","Gpt2_inf","Gpt2_inf","DeiT_inf",
+                #         "BERT_base_adapter_inf","BERT_base_adapter_cl","BERT_small_adapter_inf","BERT_small_adapter_cl",
+				# 		"BERT_base_ft"]):
+				if any(keyword in self.model_filename for keyword in(
         				"Transformer_inf","Transformer_adapter_inf","Transformer_adapter_cl","Transformer_ft",
                         "BERT_base_inf","Gpt2_inf","Gpt2_inf","DeiT_inf",
                         "BERT_base_adapter_inf","BERT_base_adapter_cl","BERT_small_adapter_inf","BERT_small_adapter_cl",
-						"BERT_base_ft"]):
+						"BERT_base_ft")):
 					for row in csv_reader:
 						row = row[:-1]
 						converted_row = [int(item) for item in row]
@@ -373,10 +378,10 @@ class Config:
 			with open(self.model_filename, mode='r', newline='') as file:
 				csv_reader = csv.reader(file)
 				first_row = next(csv_reader)  # Read the first line to determine the model type
-				if first_row[1] in ["Transformer_inf", "Transformer_adapter_inf", "Transformer_adapter_cl","Transformer_ft",
+				if any(keyword in self.model_filename for keyword in ("Transformer_inf", "Transformer_adapter_inf", "Transformer_adapter_cl","Transformer_ft",
                 "BERT_base_inf","Gpt2_inf","Gpt2_inf","DeiT_inf",
                 "BERT_base_adapter_inf","BERT_base_adapter_cl","BERT_small_adapter_inf","BERT_small_adapter_cl",
-				"BERT_base_ft"]:
+				"BERT_base_ft")):
 					for row in csv_reader:
 						row_def = row[-1]
 						self.NetStructure_layer_def.append(row_def)  # Add each row to the NetStructure list1

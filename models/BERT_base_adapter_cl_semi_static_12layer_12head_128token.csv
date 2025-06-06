@@ -1,4 +1,4 @@
-model_type,BERT_base_adapter_cl,0,0,0,0,0,0,0
+input token length,input hidden dim,weight height,weight hidden width,output height,output width,operation type,followed by softmax,operation description
 128,768,768,768,128,768,0,0,"FP:K,Q,V projection,"
 128,768,768,768,128,768,0,0,"FP:K,Q,V projection,"
 128,768,768,768,128,768,0,0,"FP:K,Q,V projection,"
