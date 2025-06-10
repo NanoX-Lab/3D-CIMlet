@@ -3,7 +3,7 @@ import math
 
 class Subarray:
     def __init__(self,config,technode,chiplet_type,memory_cell_type):
-        self.chiplet_type = chiplet_type # chiplet_type = dynamic, static_0, static_2, acc_and_buffer
+        self.chiplet_type = chiplet_type # chiplet_type = dynamic, static, semi_static, acc_and_buffer
         self.technode = technode
         # self.buffer = Buffer(config,technode)
         self.subarray_height = None
@@ -11,12 +11,12 @@ class Subarray:
         self.cell_size = 0
         self.read_energy_per_bit = 0
         self.write_energy_per_bit = 0 # now, only used in refresh energy, how about write energy? write energy only include buffer_write energy
-        if chiplet_type == 'static_0':
+        if chiplet_type == 'static':
             self.subarray_height = config.static_subarray_height # num of cell rows in a subarray
             self.subarray_width = config.static_subarray_width # num of cell cols in a subarray
-        elif chiplet_type == 'static_2':
-            self.subarray_height = config.static2_subarray_height # num of cell rows in a subarray
-            self.subarray_width = config.static2_subarray_width # num of cell cols in a subarray
+        elif chiplet_type == 'semi_static':
+            self.subarray_height = config.semistatic_subarray_height # num of cell rows in a subarray
+            self.subarray_width = config.semistatic_subarray_width # num of cell cols in a subarray
         elif chiplet_type == 'dynamic':
             self.subarray_height = config.dynamic_subarray_height # num of cell rows in a subarray
             self.subarray_width = config.dynamic_subarray_width # num of cell cols in a subarray

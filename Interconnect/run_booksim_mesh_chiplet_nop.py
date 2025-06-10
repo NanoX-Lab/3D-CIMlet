@@ -86,6 +86,9 @@ def run_booksim_mesh_chiplet_nop(config, nop_clk_freq, trace_file_dir, bus_width
     
         # Open write file handle for config file
         outfile = open(config_file, 'w')
+        
+        # Set the new tech file name
+        new_tech_file = 'techFiles/' + 'techfile_nop.txt'
 
         # Iterate over file and set size of mesh in config file
         for line in fp :
@@ -93,18 +96,25 @@ def run_booksim_mesh_chiplet_nop(config, nop_clk_freq, trace_file_dir, bus_width
             line = line.strip()
     
             # Search for pattern
-            matchobj = re.match(r'^k=', line)
-    
-            # Set size of mesh if line in file corresponds to mesh size
-            if matchobj :
-                line = 'k=' + str(mesh_size) + ';'
-    
-            # Search for pattern
-            matchobj1 = re.match(r'^channel_width = ', line)
+            matchobj1 = re.match(r'^k=', line)
     
             # Set size of mesh if line in file corresponds to mesh size
             if matchobj1 :
+                line = 'k=' + str(mesh_size) + ';'
+    
+            # Search for pattern
+            matchobj2 = re.match(r'^channel_width = ', line)
+    
+            # Set size of mesh if line in file corresponds to mesh size
+            if matchobj2 :
                 line = 'channel_width = ' + str(bus_width) + ';'
+            
+            # Search for pattern: tech_file =
+            matchobj3 = re.match(r'^tech_file = ', line)
+    
+            # Replace tech file if line in file corresponds to tech file
+            if matchobj3:
+                    line = f'tech_file = {new_tech_file};'
             
             # Write config to file
             outfile.write(line + '\n')
@@ -116,7 +126,7 @@ def run_booksim_mesh_chiplet_nop(config, nop_clk_freq, trace_file_dir, bus_width
         # Set path to log file for trace files
         log_file = os.path.join(current_dir, "logs_NoP", f"{run_id}.log")
     
-        # Copy trace file ( to ' trace_file.txt' as input of Booksim??)
+        # Copy trace file ( to ' trace_file.txt' as input of Booksim)
         os.system('cp ' + file + ' trace_file.txt')
     
         # Run Booksim with config file and save log

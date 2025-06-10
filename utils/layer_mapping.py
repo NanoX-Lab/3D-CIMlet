@@ -8,18 +8,18 @@ from utils.chiplet import Chiplet
 # get performance of layer 'row'
 def get_layer_energy_latency(row,config,technode,chiplet_type,memory_cell_type):
 
-    if chiplet_type == 'static_0':
+    if chiplet_type == 'static':
         pe_height = config.static_pe_height
         pe_width = config.static_pe_width
         subarray_width = config.static_subarray_width
         subarray_height = config.static_subarray_height
         chiplet_size = config.static_chiplet_height * config.static_chiplet_width
-    elif chiplet_type == 'static_2':
-        pe_height = config.static2_pe_height
-        pe_width = config.static2_pe_width
-        subarray_width = config.static2_subarray_width
-        subarray_height = config.static2_subarray_height
-        chiplet_size = config.static2_chiplet_height * config.static2_chiplet_width
+    elif chiplet_type == 'semi_static':
+        pe_height = config.semistatic_pe_height
+        pe_width = config.semistatic_pe_width
+        subarray_width = config.semistatic_subarray_width
+        subarray_height = config.semistatic_subarray_height
+        chiplet_size = config.semistatic_chiplet_height * config.semistatic_chiplet_width
     elif chiplet_type == 'dynamic':
         pe_height = config.dynamic_pe_height
         pe_width = config.dynamic_pe_width

@@ -57,7 +57,11 @@ def run_booksim_noc(config,trace_file_dir,num_used_static_chiplet_all_layers, nu
             chip_technode = config.static_chiplet_technode
             chip_memory_cell_type = getattr(config, f'static_chiplet_memory_cell_type')
             chip_clk_freq = getattr(config, f'{chip_memory_cell_type}_clk_freq')
-        else: # is dynamic chip or semi-static chip
+        elif (chiplet_idx < num_used_static_chiplet_all_layers) and (chiplet_static_type[chiplet_idx] == 2): # is semi-static chip
+            chip_technode = config.semistatic_chiplet_technode
+            chip_memory_cell_type = getattr(config, f'semistatic_chiplet_memory_cell_type')
+            chip_clk_freq = getattr(config, f'{chip_memory_cell_type}_clk_freq')
+        else: # is dynamic chip
             chip_technode = config.dynamic_chiplet_technode
             chip_memory_cell_type = getattr(config, f'dynamic_chiplet_memory_cell_type')
             chip_clk_freq = getattr(config, f'{chip_memory_cell_type}_clk_freq')

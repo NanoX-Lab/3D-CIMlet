@@ -3,7 +3,7 @@ import math
 
 class Config:
 	def __init__(self):
-		self.model_filename = os.path.join('models', 'BERT_base_adapter_cl_semi_static_12layer_12head_128token')
+		self.model_filename = os.path.join('models', 'BERT_base_adapter_cl_semi_static_12layer_12head_128token.csv')
 		self.net_name = os.path.splitext(os.path.basename(self.model_filename))[0]
 		self.num_T_head = int(re.findall(r'(\d+)head', self.model_filename)[0])
 		self.train_batch_size = 16
@@ -16,7 +16,7 @@ class Config:
 		self.nop_clk_freq_2d = 12.5E09 
 		self.nop_clk_freq_3d = 0.2E09 
 		self.nop_clk_freq_2_5d = 32.75E09
-		self.Packaging_dimension = 3 # 2, 2.5, 3
+		self.Packaging_dimension = 2 # 2, 2.5, 3
 		self.pitch_size_2_5d = 40E-06 
 		self.pitch_size_3d = 9E-06
 
@@ -24,7 +24,7 @@ class Config:
 		self.ebit_2_5d = 0.26e-12
 		self.ebit_3d = 0.015e-12
 
-		self.static2_chip_sram_buffer_ratio = 1/math.pow(2,4) # pow(2,4), pow(2,6), pow(2,8), pow(2,10), pow(2,12)
+		self.semistatic_chip_sram_buffer_ratio = 1/math.pow(2,4) # pow(2,4), pow(2,6), pow(2,8), pow(2,10), pow(2,12)
 
 		# eDRAM calibrated data, cell size include peripheral
 
@@ -88,8 +88,8 @@ class Config:
 		self.static_subarray_height = 256 # num of cell rows in a subarray
 		self.static_subarray_width = 256 # num of cell cols in a subarray
 		self.static_subarray_size = self.static_subarray_height * self.static_subarray_width
-		self.static2_subarray_height = 256 # num of cell rows in a subarray
-		self.static2_subarray_width = 256 # num of cell cols in a subarray
+		self.semistatic_subarray_height = 256 # num of cell rows in a subarray
+		self.semistatic_subarray_width = 256 # num of cell cols in a subarray
 		self.dynamic_subarray_height = 128 # num of cell rows in a subarray
 		self.dynamic_subarray_width = 128 # num of cell cols in a subarray
 		self.dynamic_subarray_size = self.dynamic_subarray_height * self.dynamic_subarray_width
@@ -100,8 +100,8 @@ class Config:
 		self.static_pe_height = 8 # num of subarray rows in a pe
 		self.static_pe_width = 8 # num of subarray cols in a pe
 		self.static_pe_size = self.static_pe_height * self.static_pe_width
-		self.static2_pe_height = 16 # num of subarray rows in a pe
-		self.static2_pe_width = 8 # num of subarray cols in a pe
+		self.semistatic_pe_height = 16 # num of subarray rows in a pe
+		self.semistatic_pe_width = 8 # num of subarray cols in a pe
 		self.dynamic_pe_height = 8 # num of subarray rows in a pe
 		self.dynamic_pe_width = 8 # num of subarray cols in a pe
 		self.dynamic_pe_size = self.dynamic_pe_height * self.dynamic_pe_width
@@ -114,9 +114,7 @@ class Config:
 		self.static_chiplet_height = 4 # num of PE rows in a chiplet
 		self.static_chiplet_width = 4 # num of PE cols in a chiplet
 		self.static_chiplet_size = self.static_chiplet_height * self.static_chiplet_width
-		self.static2_chiplet_height = 4 # num of PE rows in a chiplet
-		self.static2_chiplet_width = 8 # num of PE cols in a chiplet
-		
+  
 		# -----dynamic chiplet-----
 		self.dynamic_chiplet_technode = 14 # 14,16,22,28,40,65,130
 		self.dynamic_chiplet_memory_cell_type = 'eDRAM'
@@ -124,6 +122,12 @@ class Config:
 		self.dynamic_chiplet_height = 1 # num of PE rows in a chiplet
 		self.dynamic_chiplet_width = 1 # num of PE cols in a chiplet
 		self.dynamic_chiplet_size = self.dynamic_chiplet_height * self.dynamic_chiplet_width
+  
+		# -----semistatic chiplet-----
+		self.semistatic_chiplet_technode = 40 # 14,16,22,28,40,65,130
+		self.semistatic_chiplet_memory_cell_type = 'eDRAM'
+		self.semistatic_chiplet_height = 4 # num of PE rows in a chiplet
+		self.semistatic_chiplet_width = 8 # num of PE cols in a chiplet
 		
 		# -----logic chiplet-----
 		self.logic_chiplet_technode = 40
@@ -137,10 +141,10 @@ class Config:
 		self.BitWidth_in = 8
 		self.BitWidth_weight = 8
 
-		self.pe_bus_width_2D = 256 # SIAM: 32
-		self.chiplet_bus_width_2D = 32 # SIAM: 8,16,32
-		self.scale_noc = 100 # used in booksim, change to a larger number if NOC simulation is slow.
-		self.scale_nop = 10 # used in booksim, change to a larger number if NOP simulation is slow.
+		self.pe_bus_width_2D = 256
+		self.chiplet_bus_width_2D = 32
+		self.scale_noc = 10000 # used in booksim, change to a larger number if NOC simulation is slow.
+		self.scale_nop = 100 # used in booksim, change to a larger number if NOP simulation is slow.
 		
 		AR = 0
 		Rho = 0

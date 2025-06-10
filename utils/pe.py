@@ -4,7 +4,7 @@ from utils.peripheral import *
 
 class Pe:
     def __init__(self,config,technode,chiplet_type,memory_cell_type,chip_buffer_mem_height,chip_buffer_mem_width):
-        self.chiplet_type = chiplet_type # chiplet_type = dynamic, static_0, static_2, acc_and_buffer
+        self.chiplet_type = chiplet_type # chiplet_type = dynamic, static, semi_static, acc_and_buffer
         self.technode = technode
         self.pe_height = None
         self.pe_width = None
@@ -16,13 +16,13 @@ class Pe:
         self.used_pe_height = None
         self.used_pe_width = None
         
-        if chiplet_type == 'static_0':
+        if chiplet_type == 'static':
             self.pe_height = config.static_pe_height # num of subarray rows in a pe
             self.pe_width = config.static_pe_width # num of subarray cols in a pe
             self.sfu = SoftmaxUnit(config,technode,memory_cell_type)
-        elif chiplet_type == 'static_2':
-            self.pe_height = config.static2_pe_height # num of subarray rows in a pe
-            self.pe_width = config.static2_pe_width # num of subarray cols in a pe
+        elif chiplet_type == 'semi_static':
+            self.pe_height = config.semistatic_pe_height # num of subarray rows in a pe
+            self.pe_width = config.semistatic_pe_width # num of subarray cols in a pe
             self.sfu = SoftmaxUnit(config,technode,memory_cell_type)
         elif chiplet_type == 'dynamic':
             self.pe_height = config.dynamic_pe_height # num of subarray rows in a pe

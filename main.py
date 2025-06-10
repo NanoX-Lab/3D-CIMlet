@@ -12,8 +12,6 @@ def main(config):
     
     NetStructure = config.load_model()
     NetStructure_layer_def  = config.load_model_layer_def()
-    static_chiplet_size = config.static_chiplet_size
-    dynamic_chiplet_size = config.dynamic_chiplet_size
     
     # get static/dynamic layer dataflow
     # initialize PPA
@@ -40,7 +38,7 @@ def main(config):
     for layer_index, row in enumerate(NetStructure):
         # get this layer operation is static or dynamic
         if row[6]== 0: # is static layer
-            num_used_chiplet_this_layer,num_used_pe_this_layer, num_used_subarray_this_layer,performance_this_layer, static_chip_write_energy_per_bit = get_layer_energy_latency(row,config,config.static_chiplet_technode,chiplet_type='static_0',memory_cell_type=config.static_chiplet_memory_cell_type)
+            num_used_chiplet_this_layer,num_used_pe_this_layer, num_used_subarray_this_layer,performance_this_layer, static_chip_write_energy_per_bit = get_layer_energy_latency(row,config,config.static_chiplet_technode,chiplet_type='static',memory_cell_type=config.static_chiplet_memory_cell_type)
 
             num_static_chiplet_eachLayer.append(num_used_chiplet_this_layer)
             num_dynamic_chiplet_eachLayer.append(0)
@@ -51,7 +49,7 @@ def main(config):
             Num_StaticSubArray_eachLayer.append(num_used_subarray_this_layer)
             Num_DynamicSubArray_eachLayer.append(0)
         elif row[6]== 1: # is dynamic layer
-            num_used_chiplet_this_layer,num_used_pe_this_layer, num_used_subarray_this_layer,performance_this_layer, dynamic_chip_write_energy_per_bit= get_layer_energy_latency(row,config,config.static_chiplet_technode,chiplet_type='dynamic',memory_cell_type=config.dynamic_chiplet_memory_cell_type)
+            num_used_chiplet_this_layer,num_used_pe_this_layer, num_used_subarray_this_layer,performance_this_layer, dynamic_chip_write_energy_per_bit= get_layer_energy_latency(row,config,config.dynamic_chiplet_technode,chiplet_type='dynamic',memory_cell_type=config.dynamic_chiplet_memory_cell_type)
 
             num_static_chiplet_eachLayer.append(0)
             num_dynamic_chiplet_eachLayer.append(num_used_chiplet_this_layer)
@@ -64,7 +62,7 @@ def main(config):
             Num_StaticSubArray_eachLayer.append(0)
             Num_DynamicSubArray_eachLayer.append(num_used_subarray_this_layer)
         elif row[6]== 2: # is semi-static layer. (In this layer, weight need to stay static for some time but not forever)
-            num_used_chiplet_this_layer,num_used_pe_this_layer, num_used_subarray_this_layer,performance_this_layer, semi_static_chip_write_energy_per_bit = get_layer_energy_latency(row,config,config.dynamic_chiplet_technode,chiplet_type='static_2',memory_cell_type=config.dynamic_chiplet_memory_cell_type)
+            num_used_chiplet_this_layer,num_used_pe_this_layer, num_used_subarray_this_layer,performance_this_layer, semi_static_chip_write_energy_per_bit = get_layer_energy_latency(row,config,config.semistatic_chiplet_technode,chiplet_type='semi_static',memory_cell_type=config.semistatic_chiplet_memory_cell_type)
 
             num_static_chiplet_eachLayer.append(num_used_chiplet_this_layer)
             num_dynamic_chiplet_eachLayer.append(0)
@@ -90,7 +88,7 @@ def main(config):
     # get location in chiplet for each model static layer (layer?: pe?~pe? in chiplet?)
     dest_layers, to_bp_dest_layers, num_to_bp_transfer_byte_to_layer = get_dest_layers(config,NetStructure,NetStructure_layer_def)
     
-    static_chiplet_layers, static_chiplet_availability_ratio, num_used_static_chiplet_all_layers,num_used_static_chiplet,num_used_semi_static_chiplet,chiplet_static_type,layer_location_begin_chiplet = get_static_chiplet_layers(config,NetStructure,NetStructure_layer_def,Num_StaticPE_eachLayer,num_static_chiplet_eachLayer)
+    static_chiplet_layers, static_chiplet_availability_ratio, num_used_static_chiplet_all_layers,num_used_static_chiplet,num_used_semistatic_chiplet,chiplet_static_type,layer_location_begin_chiplet = get_static_chiplet_layers(config,NetStructure,NetStructure_layer_def,Num_StaticPE_eachLayer,num_static_chiplet_eachLayer)
 
     # get Num of input Activation each Layer
     Num_In_eachLayer = []
@@ -108,7 +106,7 @@ def main(config):
 
     # Integrate in 2D/2.5D/3D
     if config.Packaging_dimension == 2:
-        Integration = Integration2D(config,maxnum_layer_in_bit,num_used_static_chiplet,num_used_semi_static_chiplet,num_used_dynamic_chiplet)
+        Integration = Integration2D(config,maxnum_layer_in_bit,num_used_static_chiplet,num_used_semistatic_chiplet,num_used_dynamic_chiplet)
         # get chip area
         chip_area = Integration.CalculateArea()
         # NoC Estimation
@@ -160,10 +158,10 @@ def main(config):
         n_lane = 1
         n_bits_all_chiplets = sum(sum(row) for row in nop_num_bits_eachLayer)
         n_bits_all_chiplets += sum(sum(row) for row in nop_num_bits_train_eachLayer)
-        nop_driver_area, nop_driver_energy = NoP_hardware_estimation(config, ebit, area_per_lane, clocking_area, n_lane, num_used_static_chiplet,num_used_semi_static_chiplet, num_used_dynamic_chiplet, n_bits_all_chiplets)
+        nop_driver_area, nop_driver_energy = NoP_hardware_estimation(config, ebit, area_per_lane, clocking_area, n_lane, num_used_static_chiplet,num_used_semistatic_chiplet, num_used_dynamic_chiplet, n_bits_all_chiplets)
 
     elif config.Packaging_dimension == 2.5:
-        Integration = Integration2_5D(config,maxnum_layer_in_bit,num_used_static_chiplet,num_used_semi_static_chiplet,num_used_dynamic_chiplet)
+        Integration = Integration2_5D(config,maxnum_layer_in_bit,num_used_static_chiplet,num_used_semistatic_chiplet,num_used_dynamic_chiplet)
         
         # get chip area and get nop freq
         chip_area = Integration.CalculateArea()
@@ -220,7 +218,7 @@ def main(config):
         n_lane = 4
         n_bits_all_chiplets = sum(sum(row) for row in nop_num_bits_eachLayer)
         n_bits_all_chiplets += sum(sum(row) for row in nop_num_bits_train_eachLayer)
-        nop_driver_area, nop_driver_energy = NoP_hardware_estimation(config,ebit, area_per_lane_28nm, clocking_area, n_lane, num_used_static_chiplet,num_used_semi_static_chiplet,num_used_dynamic_chiplet, n_bits_all_chiplets)
+        nop_driver_area, nop_driver_energy = NoP_hardware_estimation(config,ebit, area_per_lane_28nm, clocking_area, n_lane, num_used_static_chiplet,num_used_semistatic_chiplet,num_used_dynamic_chiplet, n_bits_all_chiplets)
 
         print("nop_driver_energy",nop_driver_energy)
 
@@ -347,7 +345,7 @@ def main(config):
 
     # utilization and PPA
     static_chiplet_utilization = [(1- x) for x in static_chiplet_availability_ratio]
-    dynamic_chiplet_utilization = [x / (dynamic_chiplet_size * num_used_dynamic_chiplet) for x in Num_DynamicPE_eachLayer]
+    dynamic_chiplet_utilization = [x / (config.dynamic_chiplet_size * num_used_dynamic_chiplet) for x in Num_DynamicPE_eachLayer]
     
     Total_Area = 0
     Total_Area += chip_area
@@ -372,8 +370,8 @@ def main(config):
     read_latency_output_peHtree_eachLayer = [layer[12] for layer in performance_each_layer]
     read_energy_output_peHtree_eachLayer = [layer[13] for layer in performance_each_layer]
     
-    # get total_latency of eachLayer
-    # consider if rram weight write-in is included in for each layer
+    # get total latency of each layer
+    # # consider if weight write-in latency is included in for each layer
     total_latency_eachLayer = [0] * len(NetStructure)
     for layer_idx, layer in enumerate(NetStructure):
         total_latency_eachLayer[layer_idx] = write_latency_input_eachLayer[layer_idx] + read_latency_output_eachLayer[layer_idx] + refresh_latency_weight_eachLayer[layer_idx]
@@ -385,7 +383,7 @@ def main(config):
         # if (layer[6] == 0) and (config.static_chiplet_memory_cell_type == 'eDRAM'): # static layer, need weight write-in (only when eDRAM for static layer)
         #     total_latency_eachLayer[layer_idx] += write_latency_weight_eachLayer[layer_idx]
     
-    # consider if semi-static layers' edram weight write-in is included in for each layer (by comparing to the latency from src_layer to dest_layer)
+    # # consider if semi-static layers' edram weight write-in latency is included in for each layer (by comparing to the latency from src_layer to dest_layer)
     layers_process_latency_eachDestLayer = [0] * len(NetStructure)
     for layer in range(len(NetStructure)):
         for dest_layer_idx in (to_bp_dest_layers[layer]):
@@ -400,8 +398,8 @@ def main(config):
                 total_latency_eachLayer[dest_layer_idx] += write_latency_weight_eachLayer[dest_layer_idx]
     # print("layers_process_latency_eachDestLayer :",layers_process_latency_eachDestLayer)
     
-    # get total_energy of eachLayer
-    # consider if rram weight write-in is included in for each layer
+    # get total energy of each layer
+    # # consider if weight write-in energy is included in for each layer
     total_energy_eachLayer = [0] * len(NetStructure)
     for layer_idx, layer in enumerate(NetStructure):
         total_energy_eachLayer[layer_idx] = write_energy_input_eachLayer[layer_idx] + read_energy_output_eachLayer[layer_idx] + refresh_energy_weight_eachLayer[layer_idx]
@@ -421,7 +419,7 @@ def main(config):
     
     # total_latency = sum(total_latency_eachLayer)
     
-    # get refresh weight energy of each static layer (useful if in edram). and for each semi-static layer, weight refresh energy (stored in edram CIM) or weight leakage energy (stored in edram chip buffer) 
+    # # get refresh weight energy of each static layer (useful if in edram). and for each semi-static layer, weight refresh energy (stored in edram CIM) or weight leakage energy (stored in sram chip buffer) 
     refresh_retention_time = getattr(config, f'eDRAM_refresh_retention_time_{config.dynamic_chiplet_technode}nm')
     refresh_power_per_bit = getattr(config, f'eDRAM_refresh_power_per_bit_{config.dynamic_chiplet_technode}nm')
     static_refresh_energy_weight_eachLayer = [0] * len(NetStructure)
@@ -435,7 +433,7 @@ def main(config):
             # option 1: for each semi-static layer, weight refresh energy (stored in edram CIM)
             num_refresh_times = math.ceil(layers_process_latency_eachDestLayer[layer_idx] / refresh_retention_time)
             semi_static_refresh_energy_weight_eachLayer[layer_idx] = (layer[2]*layer[3]*config.BitWidth_weight * num_refresh_times) * refresh_power_per_bit * (100* 1/config.eDRAM_clk_freq)
-            # option 2: for each semi-static layer, weight leakage energy (stored in edram chip buffer)
+            # option 2: for each semi-static layer, weight leakage energy (stored in sram chip buffer)
             buffer = Buffer(config,config.dynamic_chiplet_technode,'SRAM',mem_width=config.chip_buffer_core_width * math.ceil(layer[2]*layer[3]*config.BitWidth_weight / config.chip_buffer_core_height / config.chip_buffer_core_width) ,mem_height=config.chip_buffer_core_height)
             buffer_leak_energy_weight_eachLayer[layer_idx] = layers_process_latency_eachDestLayer[layer_idx] * buffer.get_leak_power()
             # buffer_leak_energy_weight_eachLayer[layer_idx] = total_latency * buffer.get_leak_power()
@@ -446,8 +444,8 @@ def main(config):
     extra_bp_weight_storage_energy_eachLayer = [0] * len((NetStructure)) # add to total energy
     # option 3: hybrid edram-sram buffer
     if any(keyword in config.model_filename for keyword in ("cl", "ft")):
-        available_sram_buffer_size_each_static2_chip = [Integration.static2_chiplet.buffer_size] * num_used_semi_static_chiplet
-        buffer = Integration.static2_chiplet.buffer
+        available_sram_buffer_size_each_semistatic_chip = [Integration.semistatic_chiplet.buffer_size] * num_used_semistatic_chiplet
+        buffer = Integration.semistatic_chiplet.buffer
         
         for layer_idx, layer in enumerate(NetStructure):
             if layer[6] == 2:
@@ -456,16 +454,16 @@ def main(config):
                         num_this_layer_input_bit = Num_In_eachLayer[layer_idx] * config.BitWidth_in
                         # if sram buffer is available for all input bits of this layer, store all in sram buffer
                         chip_idx -= num_used_static_chiplet
-                        if available_sram_buffer_size_each_static2_chip[chip_idx] >= num_this_layer_input_bit :
+                        if available_sram_buffer_size_each_semistatic_chip[chip_idx] >= num_this_layer_input_bit :
                             extra_bp_weight_storage_energy_eachLayer[layer_idx] += layers_process_latency_eachDestLayer[layer_idx] * buffer.get_leak_power() / (buffer.mem_width * buffer.mem_height) * num_this_layer_input_bit
 
                             bp_weight_storage_energy_eachLayer[layer_idx] += layers_process_latency_eachDestLayer[layer_idx] * buffer.get_leak_power() / (buffer.mem_width * buffer.mem_height) * num_this_layer_input_bit + (buffer.get_energy_per_bit(config)[0] + buffer.get_energy_per_bit(config)[1]) * num_this_layer_input_bit
 
-                            available_sram_buffer_size_each_static2_chip[chip_idx] -= num_this_layer_input_bit # update buffer availability
+                            available_sram_buffer_size_each_semistatic_chip[chip_idx] -= num_this_layer_input_bit # update buffer availability
                         # else: sram buffer has no enough availablability for this layer
                         else:
                             # sram has 0 availablity, store and refresh all in eDRAM CIM
-                            if available_sram_buffer_size_each_static2_chip[chip_idx] == 0:
+                            if available_sram_buffer_size_each_semistatic_chip[chip_idx] == 0:
                                 num_refresh_times = math.ceil(layers_process_latency_eachDestLayer[layer_idx] / refresh_retention_time)
                                 extra_bp_weight_storage_energy_eachLayer[layer_idx] += num_this_layer_input_bit * num_refresh_times * refresh_power_per_bit * (100* 1/config.eDRAM_clk_freq)
                                 extra_bp_weight_storage_energy_eachLayer[layer_idx] -= (buffer.get_energy_per_bit(config)[0] + buffer.get_energy_per_bit(config)[1])* num_this_layer_input_bit
@@ -475,23 +473,23 @@ def main(config):
                                 bp_weight_storage_edram_energy_eachLayer[layer_idx] += num_this_layer_input_bit * num_refresh_times * refresh_power_per_bit * (100* 1/config.eDRAM_clk_freq)
 
                             # sram has some availablity, store and refresh a part of this layer in eDRAM CIM, store others in eDRAM CIM 
-                            elif available_sram_buffer_size_each_static2_chip[chip_idx] < num_this_layer_input_bit :
+                            elif available_sram_buffer_size_each_semistatic_chip[chip_idx] < num_this_layer_input_bit :
                                 # store a part in SRAM
-                                extra_bp_weight_storage_energy_eachLayer[layer_idx] += layers_process_latency_eachDestLayer[layer_idx] * buffer.get_leak_power() / (buffer.mem_width * buffer.mem_height) * available_sram_buffer_size_each_static2_chip[chip_idx]
+                                extra_bp_weight_storage_energy_eachLayer[layer_idx] += layers_process_latency_eachDestLayer[layer_idx] * buffer.get_leak_power() / (buffer.mem_width * buffer.mem_height) * available_sram_buffer_size_each_semistatic_chip[chip_idx]
 
-                                bp_weight_storage_energy_eachLayer[layer_idx] += layers_process_latency_eachDestLayer[layer_idx] * buffer.get_leak_power() / (buffer.mem_width * buffer.mem_height) * available_sram_buffer_size_each_static2_chip[chip_idx] + (buffer.get_energy_per_bit(config)[0] + buffer.get_energy_per_bit(config)[1]) * num_this_layer_input_bit
+                                bp_weight_storage_energy_eachLayer[layer_idx] += layers_process_latency_eachDestLayer[layer_idx] * buffer.get_leak_power() / (buffer.mem_width * buffer.mem_height) * available_sram_buffer_size_each_semistatic_chip[chip_idx] + (buffer.get_energy_per_bit(config)[0] + buffer.get_energy_per_bit(config)[1]) * num_this_layer_input_bit
 
                                 # store a part in eDRAM CIM
                                 num_refresh_times = math.ceil(layers_process_latency_eachDestLayer[layer_idx] / refresh_retention_time)
-                                extra_bp_weight_storage_energy_eachLayer[layer_idx] += (num_this_layer_input_bit - available_sram_buffer_size_each_static2_chip[chip_idx]) * num_refresh_times * refresh_power_per_bit * (100* 1/config.eDRAM_clk_freq)
-                                extra_bp_weight_storage_energy_eachLayer[layer_idx] -= (buffer.get_energy_per_bit(config)[0] + buffer.get_energy_per_bit(config)[1])* (num_this_layer_input_bit - available_sram_buffer_size_each_static2_chip[chip_idx])
+                                extra_bp_weight_storage_energy_eachLayer[layer_idx] += (num_this_layer_input_bit - available_sram_buffer_size_each_semistatic_chip[chip_idx]) * num_refresh_times * refresh_power_per_bit * (100* 1/config.eDRAM_clk_freq)
+                                extra_bp_weight_storage_energy_eachLayer[layer_idx] -= (buffer.get_energy_per_bit(config)[0] + buffer.get_energy_per_bit(config)[1])* (num_this_layer_input_bit - available_sram_buffer_size_each_semistatic_chip[chip_idx])
 
-                                bp_weight_storage_energy_eachLayer[layer_idx] += (num_this_layer_input_bit - available_sram_buffer_size_each_static2_chip[chip_idx]) * num_refresh_times * refresh_power_per_bit * (100* 1/config.eDRAM_clk_freq)
+                                bp_weight_storage_energy_eachLayer[layer_idx] += (num_this_layer_input_bit - available_sram_buffer_size_each_semistatic_chip[chip_idx]) * num_refresh_times * refresh_power_per_bit * (100* 1/config.eDRAM_clk_freq)
 
-                                bp_weight_storage_edram_energy_eachLayer[layer_idx] += (num_this_layer_input_bit - available_sram_buffer_size_each_static2_chip[chip_idx]) * num_refresh_times * refresh_power_per_bit * (100* 1/config.eDRAM_clk_freq)
+                                bp_weight_storage_edram_energy_eachLayer[layer_idx] += (num_this_layer_input_bit - available_sram_buffer_size_each_semistatic_chip[chip_idx]) * num_refresh_times * refresh_power_per_bit * (100* 1/config.eDRAM_clk_freq)
 
                                 # update sram buffer availability
-                                available_sram_buffer_size_each_static2_chip[chip_idx] = 0 
+                                available_sram_buffer_size_each_semistatic_chip[chip_idx] = 0 
         # print("extra_bp_weight_storage_energy_eachLayer:",extra_bp_weight_storage_energy_eachLayer)
     # ===============            analysis done: hybrid storage             =============== #
     
@@ -565,9 +563,9 @@ def main(config):
     area_eachChip = [0] * num_used_chiplets
     for chip_idx in range(num_used_chiplets):
         if chip_idx < num_used_static_chiplet:
-            area_eachChip[chip_idx] = Integration.static0_chiplet.get_area() * 1E6
+            area_eachChip[chip_idx] = Integration.static_chiplet.get_area() * 1E6
         elif chip_idx < num_used_static_chiplet_all_layers:
-            area_eachChip[chip_idx] = Integration.static2_chiplet.get_area() * 1E6
+            area_eachChip[chip_idx] = Integration.semistatic_chiplet.get_area() * 1E6
         else:
             area_eachChip[chip_idx] = Integration.dynamic_chiplet.get_area() * 1E6
         chip_power_mW_per_area_mm2_eachChip[chip_idx] = chip_power_mW_eachChip[chip_idx] / area_eachChip[chip_idx]
@@ -611,7 +609,7 @@ def main(config):
     for chip_idx in range(num_used_chiplets):
             tops_per_mm2_eachChip[chip_idx] = tops_per_w_per_mm2_eachChip[chip_idx] * (chip_power_mW_eachChip[chip_idx] * 1e-03)
     
-    # merge (static0,dynamic,static2) to (static0+dynamic,static2) for TOPS/W/mm2 and TOPS/mm2
+    # merge (static,dynamic,semi_static) to (static+dynamic,semi_static) for TOPS/W/mm2 and TOPS/mm2
     # for chip_idx in range(num_used_static_chiplet_all_layers,num_used_chiplets):
     #     tops_per_w_per_mm2_eachChip[chip_idx] = max_tops_per_w_per_mm2_eachChip[chip_idx]
     for chip_idx in range(0,num_used_static_chiplet):
@@ -771,7 +769,7 @@ def main(config):
     print("===== Breakdown =====")
     print("Num used Static Chiplets (static and semi-static):", num_used_static_chiplet_all_layers)
     print("Num used Static Chiplets (static):", num_used_static_chiplet)
-    print("Num used Static Chiplets (semi-static):", num_used_semi_static_chiplet)
+    print("Num used Static Chiplets (semi-static):", num_used_semistatic_chiplet)
     print("Num used Dynamic Chiplets:", num_used_dynamic_chiplet)
     
     print("static chiplet utilization:", static_chiplet_utilization) # for each static-chiplet, ?% pe used 

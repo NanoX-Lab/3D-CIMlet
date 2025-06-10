@@ -2,7 +2,7 @@ import math,re
 import numpy as np
 
 def get_static_chiplet_layer_range(config,Num_StaticPE_eachLayer,num_static_chiplet_eachLayer):
-    static_chiplet_size = config.static_chiplet_height * config.static_chiplet_width
+    static_chiplet_size = config.static_chiplet_size
 
     # get layers in each static chiplet (chiplet_layer_range list :layer?~? in chiplet i)
     chiplet_availability = [static_chiplet_size] * config.num_static_chiplet  # Initialize all chiplets' unmapped PE to be static_chiplet_size
@@ -230,7 +230,7 @@ def get_static_chiplet_layers(config,net_structure,net_structure_layer_def,Num_S
             if num_used_chiplet != (last_chiplet_used + 1):
                 num_used_chiplet = (last_chiplet_used + 1)
     
-    chiplet_availability[num_used_chiplet:] = [config.static2_chiplet_height * config.static2_chiplet_width] * (len(chiplet_availability) - num_used_chiplet) # update chip size for static 2 chip
+    chiplet_availability[num_used_chiplet:] = [config.semistatic_chiplet_height * config.semistatic_chiplet_width] * (len(chiplet_availability) - num_used_chiplet) # update chip size for static 2 chip
     
     # go through semi-static layers
     for layer_idx, layer in enumerate(net_structure):
@@ -244,7 +244,7 @@ def get_static_chiplet_layers(config,net_structure,net_structure_layer_def,Num_S
         
         if layer[6] == 2: # is semi-static layer
 
-            chiplet_availability[num_used_chiplet:] = [config.static2_chiplet_height * config.static2_chiplet_width] * (len(chiplet_availability) - num_used_chiplet) # update chip size for static 2 chip
+            chiplet_availability[num_used_chiplet:] = [config.semistatic_chiplet_height * config.semistatic_chiplet_width] * (len(chiplet_availability) - num_used_chiplet) # update chip size for static 2 chip
 
             # Split the PE requirements for this layer equally across multiple chiplets
             if num_static_chiplet_this_layer >1:
@@ -254,7 +254,7 @@ def get_static_chiplet_layers(config,net_structure,net_structure_layer_def,Num_S
                 
                 for i in range(num_static_chiplet_this_layer):
                     if chiplet_index + i < len(chiplet_availability):
-                        chiplet_availability[chiplet_index + i] = config.static2_chiplet_height * config.static2_chiplet_width # update chip size for static 2 chip
+                        chiplet_availability[chiplet_index + i] = config.semistatic_chiplet_height * config.semistatic_chiplet_width # update chip size for static 2 chip
                         chiplet_availability[chiplet_index + i] -= pe_used_per_chiplet
                     else:
                         print(f"Warning: Layer {layer_idx} need {num_static_chiplet_this_layer} chip, i= {i}, chiplet_index {chiplet_index + i} out of range.")
@@ -279,7 +279,7 @@ def get_static_chiplet_layers(config,net_structure,net_structure_layer_def,Num_S
                     else:
                         chiplet_index = last_chiplet_used
                     
-                    chiplet_availability[chiplet_index] = config.static2_chiplet_height * config.static2_chiplet_width # update chip size for static 2 chip
+                    chiplet_availability[chiplet_index] = config.semistatic_chiplet_height * config.semistatic_chiplet_width # update chip size for static 2 chip
                     available_pe = chiplet_availability[chiplet_index]
           
                     if required_pes <= available_pe:
@@ -350,7 +350,7 @@ def get_static_chiplet_layers(config,net_structure,net_structure_layer_def,Num_S
     chiplet_availability = np.array(chiplet_availability[:num_used_chiplet])
     chiplet_availability_ratio = np.zeros(num_used_chiplet)
     chiplet_availability_ratio[:num_used_static_chiplet] = chiplet_availability[:num_used_static_chiplet] / (config.static_chiplet_height * config.static_chiplet_width)
-    chiplet_availability_ratio[num_used_static_chiplet:num_used_chiplet] = chiplet_availability[num_used_static_chiplet:num_used_chiplet] / (config.static2_chiplet_height * config.static2_chiplet_width)
+    chiplet_availability_ratio[num_used_static_chiplet:num_used_chiplet] = chiplet_availability[num_used_static_chiplet:num_used_chiplet] / (config.semistatic_chiplet_height * config.semistatic_chiplet_width)
     
     return chiplet_layers, chiplet_availability_ratio, num_used_chiplet, num_used_static_chiplet, num_used_semi_static_chiplet, chiplet_static_type, layer_location_begin_chiplet
 
