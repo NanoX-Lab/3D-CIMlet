@@ -1072,7 +1072,13 @@ def generate_chip2chip_num_bit(config,num_used_chiplets, num_used_static_chiplet
             
             # if the src_layer_begin_chip and dest_layer_begin_chip are not on same chip -> need NoP, or 
             # if src_layer_begin_chip and dest_layer_begin_chip are on same chip, and src_layer and dest_layer are both dynamic layers, and two layers need diff num of chips -> need NoP
-            if ((layer_location_begin_chiplet[dest_layer] != layer_location_begin_chiplet[layer_idx]) | ((layer_location_begin_chiplet[dest_layer] == num_used_static_chiplet_all_layers) & (layer_location_begin_chiplet[layer_idx] == num_used_static_chiplet_all_layers) & (num_chiplet_eachLayer[layer_idx] != num_chiplet_eachLayer[dest_layer]))):
+            if (dest_layer < len(layer_location_begin_chiplet) and
+                dest_layer < len(num_chiplet_eachLayer)) and (
+                (layer_location_begin_chiplet[dest_layer] != layer_location_begin_chiplet[layer_idx]) |
+                ((layer_location_begin_chiplet[dest_layer] == num_used_static_chiplet_all_layers) and
+                (layer_location_begin_chiplet[layer_idx] == num_used_static_chiplet_all_layers) and
+                (num_chiplet_eachLayer[layer_idx] != num_chiplet_eachLayer[dest_layer]))
+            ):
 
                 trace = np.array([[0,0,0]])
                 

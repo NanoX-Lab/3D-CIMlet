@@ -16,7 +16,7 @@ class Config:
 		self.nop_clk_freq_2d = 12.5E09 
 		self.nop_clk_freq_3d = 0.2E09 
 		self.nop_clk_freq_2_5d = 32.75E09
-		self.Packaging_dimension = 2 # 2, 2.5, 3
+		self.Packaging_dimension = 3 # 2, 2.5, 3
 		self.pitch_size_2_5d = 40E-06 
 		self.pitch_size_3d = 9E-06
 
