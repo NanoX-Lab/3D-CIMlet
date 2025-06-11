@@ -600,9 +600,8 @@ def main(config):
         tops_per_w_per_mm2_eachChip[chip_idx] = max_tops_per_w_per_mm2_eachChip[chip_idx]
 
     # get static chip TOPS/W/mm2
-    
     for chip_idx, chip_layers_group in enumerate(static_chiplet_layers):
-        tops_per_w_per_mm2_eachChip[chip_idx] = (tops_eachChip[chip_idx]/ (energy_eachChip[chip_idx]+noc_energy/num_used_chiplets) / area_eachChip[chip_idx]) / num_static_chiplet_eachLayer[layer_idx]
+        tops_per_w_per_mm2_eachChip[chip_idx] = (tops_eachChip[chip_idx]/ (energy_eachChip[chip_idx]+noc_energy/num_used_chiplets) / area_eachChip[chip_idx])
     
     # get all chip TOPS/mm2
     tops_per_mm2_eachChip = [0] * num_used_chiplets

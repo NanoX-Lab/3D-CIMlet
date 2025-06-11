@@ -43,7 +43,7 @@ class Integration2D(Integration):
         
         # add die-to-die spacing (assume trace len.: 300~500um)
         spacing_len = 300e-6
-        num_die = self.num_static_chiplet + self.num_dynamic_chiplet
+        num_die = self.num_static_chiplet + self.num_dynamic_chiplet + self.num_semistatic_chiplet
         num_die_spacing = math.ceil(math.sqrt(num_die)) - 1
         area += (num_die_spacing * spacing_len) * math.sqrt(area) * 2
         
@@ -84,7 +84,7 @@ class Integration2_5D(Integration):
         
         # add die-to-die spacing (assume trace len.: 300~500um)
         spacing_len = 300e-6
-        num_die = self.num_static_chiplet + self.num_dynamic_chiplet
+        num_die = self.num_static_chiplet + self.num_dynamic_chiplet + self.num_semistatic_chiplet
         num_die_spacing = math.ceil(math.sqrt(num_die)) - 1
         area += (num_die_spacing * spacing_len) * math.sqrt(area) * 2
         
