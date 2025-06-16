@@ -37,7 +37,7 @@ def main(config):
     # get dynamic power and latency
     for layer_index, row in enumerate(NetStructure):
         # get this layer operation is static or dynamic
-        if row[6]== 0: # is static layer
+        if row[6] == 0: # is static layer
             num_used_chiplet_this_layer,num_used_pe_this_layer, num_used_subarray_this_layer,performance_this_layer, static_chip_write_energy_per_bit = get_layer_energy_latency(row,config,config.static_chiplet_technode,chiplet_type='static',memory_cell_type=config.static_chiplet_memory_cell_type)
 
             num_static_chiplet_eachLayer.append(num_used_chiplet_this_layer)
@@ -48,7 +48,7 @@ def main(config):
 
             Num_StaticSubArray_eachLayer.append(num_used_subarray_this_layer)
             Num_DynamicSubArray_eachLayer.append(0)
-        elif row[6]== 1: # is dynamic layer
+        elif row[6] == 1: # is dynamic layer
             num_used_chiplet_this_layer,num_used_pe_this_layer, num_used_subarray_this_layer,performance_this_layer, dynamic_chip_write_energy_per_bit= get_layer_energy_latency(row,config,config.dynamic_chiplet_technode,chiplet_type='dynamic',memory_cell_type=config.dynamic_chiplet_memory_cell_type)
 
             num_static_chiplet_eachLayer.append(0)
@@ -61,7 +61,7 @@ def main(config):
 
             Num_StaticSubArray_eachLayer.append(0)
             Num_DynamicSubArray_eachLayer.append(num_used_subarray_this_layer)
-        elif row[6]== 2: # is semi-static layer. (In this layer, weight need to stay static for some time but not forever)
+        elif row[6] == 2: # is semi-static layer. (In this layer, weight need to stay static for some time but not forever)
             num_used_chiplet_this_layer,num_used_pe_this_layer, num_used_subarray_this_layer,performance_this_layer, semi_static_chip_write_energy_per_bit = get_layer_energy_latency(row,config,config.semistatic_chiplet_technode,chiplet_type='semi_static',memory_cell_type=config.semistatic_chiplet_memory_cell_type)
 
             num_static_chiplet_eachLayer.append(num_used_chiplet_this_layer)
@@ -403,13 +403,6 @@ def main(config):
     total_energy_eachLayer = [0] * len(NetStructure)
     for layer_idx, layer in enumerate(NetStructure):
         total_energy_eachLayer[layer_idx] = write_energy_input_eachLayer[layer_idx] + read_energy_output_eachLayer[layer_idx] + refresh_energy_weight_eachLayer[layer_idx]
-        if layer_idx == 329 or layer_idx == 360:
-            print("layer:",layer_idx)
-            print("write_energy_input:",write_energy_input_eachLayer[layer_idx])
-            print("read_energy_output:",read_energy_output_eachLayer[layer_idx])
-            print("refresh_energy_weight:",refresh_energy_weight_eachLayer[layer_idx])
-            print("read_energy_output_peHtree:",read_energy_output_peHtree_eachLayer[layer_idx])
-            # print("refresh_energy_weight:",refresh_energy_weight_eachLayer[layer_idx])
         
         if (layer[6] == 1) or (layer[6] == 2): # dynamic layer or semi-static layer, need weight write-in (no matter edram or rram for dynamic or semi-static op)
             total_energy_eachLayer[layer_idx] += write_energy_weight_eachLayer[layer_idx]
@@ -753,14 +746,14 @@ def main(config):
     print("-- w/o NoC,NoP:")
     print("Total Energy (J) :",Total_Energy_opt_3)
     print(" -- bp_weight_store_energy (store bp changing weight in SRAM buffer and eDRAM CIM) :",total_bp_weight_storage_energy)
-    print("-- bp_weight_store_energy (ony edram part) :", "{:.5e}".format(total_bp_weight_storage_edram_energy))
+    print("-- bp_weight_store_energy (only edram part) :", "{:.5e}".format(total_bp_weight_storage_edram_energy))
     print("Energy Efficiency (TOPS/W) :", Energy_Efficiency_opt_3)
     print("Energy Efficiency Per Area (TOPS/W/mm2) :", Energy_Efficiency_Per_Area_opt_3)
     print("")
     print("-- w/ NoC,NoP:")
     print("Total Energy (J) :",Total_Energy_opt_3_)
     print(" -- bp_weight_store_energy (store bp changing weight in SRAM buffer and eDRAM CIM) :",total_bp_weight_storage_energy)
-    print("-- bp_weight_store_energy (ony edram part) :",total_bp_weight_storage_edram_energy)
+    print("-- bp_weight_store_energy (only edram part) :",total_bp_weight_storage_edram_energy)
     print("Energy Efficiency (TOPS/W) :", Energy_Efficiency_opt_3_)
     print("Energy Efficiency Per Area (TOPS/W/mm2) :", Energy_Efficiency_Per_Area_opt_3_)
     print("")
