@@ -279,10 +279,6 @@ def get_static_chiplet_layers(config,net_structure,net_structure_layer_def,Num_S
                     else:
                         chiplet_index = last_chiplet_used
                     
-                    chiplet_availability[chiplet_index] = config.semistatic_chiplet_height * config.semistatic_chiplet_width # update chip size for semi-static chip
-                    
-                    print("chiplet_availability of", chiplet_index, chiplet_availability[chiplet_index])
-                    
                     available_pe = chiplet_availability[chiplet_index]
           
                     if required_pes <= available_pe:
