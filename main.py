@@ -244,6 +244,7 @@ def main(config):
             noc_train_area /= num_used_chiplets
         
         # NoP Estimation
+        ## NoP (inference)
         nop_area, nop_latency, nop_energy = 0,0,0
         nop_num_bits_eachLayer = [[0] * len(NetStructure) for _ in range(len(NetStructure))]
         num_bits_src_chip_to_dest_chip = [[0] * num_used_chiplets for _ in range(num_used_chiplets)]
@@ -251,10 +252,13 @@ def main(config):
         num_cycle_src_chip_to_dest_chip_for_latency = [[0] * num_used_chiplets for _ in range(num_used_chiplets)]
         ebit = config.ebit_3d
         
+        ### generate trace of layers and chips
         nop_num_bits_eachLayer, num_bits_src_chip_to_dest_chip = generate_chip2chip_num_bit(config, num_used_chiplets, num_used_static_chiplet_all_layers, num_chiplet_eachLayer, dest_layers, layer_location_begin_chiplet, Num_In_eachLayer)
         
-        #=============================================
+        ### get nop_energy and nop_latency
         chip_list = list(range(num_used_chiplets))
+        new_chip_list = chip_list
+        #===== change chips order if needed (e.g. move dynamic chips to the middle) =====#
         # Separate the last n items
         last_n_items = chip_list[-num_used_dynamic_chiplet:]
         # The remaining part of the list after removing the last n items
@@ -264,6 +268,8 @@ def main(config):
         
         # Insert the last n items into the middle
         new_chip_list = remaining_chip_list[:middle_index] + last_n_items + remaining_chip_list[middle_index:]
+        #===== change chips order if needed end (e.g. move dynamic chips to the middle) =====#
+        
         print("new_chip_list:",new_chip_list)
         # print("new_chip_list.index(18):",new_chip_list.index(18))
         # print("new_chip_list.index(9):",new_chip_list.index(9))
@@ -274,18 +280,18 @@ def main(config):
                     
                 pos_i = new_chip_list.index(i)
                 pos_j = new_chip_list.index(j)
-                num_bits_src_chip_to_dest_chip_for_energy[i][j] = num_bits_src_chip_to_dest_chip[i][j] * abs(pos_j - pos_i) - 1
+                num_bits_src_chip_to_dest_chip_for_energy[i][j] = num_bits_src_chip_to_dest_chip[i][j] * abs(pos_j - pos_i)
                 
                 num_batch = math.ceil(num_bits_src_chip_to_dest_chip[i][j] / num_pin)
                 if num_batch != 0:
-                    num_cycle_src_chip_to_dest_chip_for_latency[i][j] = (num_batch + (abs(pos_j - pos_i) - 1))/num_batch
+                    num_cycle_src_chip_to_dest_chip_for_latency[i][j] = num_batch + (abs(pos_j - pos_i) - 1)
         weighted_num_bits_src_chip_to_dest_chip = sum(sum(row) for row in num_bits_src_chip_to_dest_chip_for_energy)
         weighted_num_cycles_src_chip_to_dest_chip = sum(sum(row) for row in num_cycle_src_chip_to_dest_chip_for_latency)
         
         nop_energy = weighted_num_bits_src_chip_to_dest_chip * ebit
         nop_latency = weighted_num_cycles_src_chip_to_dest_chip * (1 / nop_clk_freq)
-        #=============================================
-        #=============================================
+        
+        #===== breakdown: static dynamic nop ======#
         total_exclude_static_dynamic_nop_bits = 0
         total_exclude_static_dynamic_nop_cycles = 0
         for src_chip_idx in range(len(num_bits_src_chip_to_dest_chip)):
@@ -296,17 +302,19 @@ def main(config):
                     total_exclude_static_dynamic_nop_cycles += num_cycle_src_chip_to_dest_chip_for_latency[src_chip_idx][dest_chip_idx]
         total_exclude_static_dynamic_nop_latency = total_exclude_static_dynamic_nop_cycles / nop_clk_freq
         total_exclude_static_dynamic_nop_energy = total_exclude_static_dynamic_nop_bits * ebit
-        #=============================================
+        #===== breakdown: static dynamic nop end ======#
         
+        ## NoP (training)
         nop_train_area, nop_train_latency, nop_train_energy= 0,0,0
         nop_num_bits_train_eachLayer = [[0] * len(NetStructure) for _ in range(len(NetStructure))]
         num_train_bits_src_chip_to_dest_chip = [[0] * num_used_chiplets for _ in range(num_used_chiplets)]
         num_train_bits_src_chip_to_dest_chip_for_energy = [[0] * num_used_chiplets for _ in range(num_used_chiplets)]
         num_train_cycle_src_chip_to_dest_chip_for_latency = [[0] * num_used_chiplets for _ in range(num_used_chiplets)]
+        ### generate trace of layers and chips related to training
         if "inf" not in config.net_name:
             nop_num_train_bits_eachLayer, num_train_bits_src_chip_to_dest_chip = generate_chip2chip_num_bit(config, num_used_chiplets, num_used_static_chiplet_all_layers, num_chiplet_eachLayer, to_bp_dest_layers, layer_location_begin_chiplet, num_to_bp_transfer_byte_to_layer)
             
-            #=============================================
+            ### get nop_train_energy and nop_train_latency
             for i in range(len(num_train_bits_src_chip_to_dest_chip)):
                 for j in range(len(num_train_bits_src_chip_to_dest_chip[i])):
                     # num_train_bits_src_chip_to_dest_chip_ordered[i][j] = num_train_bits_src_chip_to_dest_chip[i][j] * abs(i - j) # need change, if change chip-chip distance # need change, add chip-chip distance
@@ -324,8 +332,8 @@ def main(config):
             
             nop_train_energy = weighted_num_train_bits_src_chip_to_dest_chip * ebit
             nop_train_latency = weighted_num_train_cycles_src_chip_to_dest_chip * (1 / nop_clk_freq)
-            #=============================================
-            #=============================================
+            
+            #===== breakdown: static dynamic nop related to training ======#
             total_exclude_static_dynamic_nop_train_bits = 0
             total_exclude_static_dynamic_nop_train_cycles = 0
             for src_chip_idx in range(len(num_train_bits_src_chip_to_dest_chip)):
@@ -335,7 +343,7 @@ def main(config):
                         total_exclude_static_dynamic_nop_train_cycles += num_train_cycle_src_chip_to_dest_chip_for_latency[src_chip_idx][dest_chip_idx]
             total_exclude_static_dynamic_nop_train_latency = total_exclude_static_dynamic_nop_train_cycles / nop_clk_freq
             total_exclude_static_dynamic_nop_train_energy = total_exclude_static_dynamic_nop_train_bits * ebit
-            #=============================================
+            #===== breakdown: static dynamic nop related to training end ======#
         
         n_bits_all_chiplets = sum(sum(row) for row in nop_num_bits_eachLayer)
         n_bits_all_chiplets += sum(sum(row) for row in nop_num_bits_train_eachLayer)
