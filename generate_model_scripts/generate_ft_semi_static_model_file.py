@@ -115,8 +115,6 @@ df.iloc[1:, 8] = df.iloc[1:, 8].apply(lambda x: f"FP:{x}" if isinstance(x, str) 
 # df.iloc[1:, 6] = df.iloc[1:].apply(lambda row: 1 if isinstance(row[6], int) else row[6], axis=1)
 
 cl_df = pd.concat([df, bp_df], axis=0, ignore_index=True)
-cl_df.iloc[0, 1] = cl_df.iloc[0, 1].replace('inf', 'ft') # change the first row (model type) of whole new file 
-# save to new csv file
 cl_df.to_csv(output_file_path, index=False, header=False)
 
 print(f"New file generated: {output_file_path}")

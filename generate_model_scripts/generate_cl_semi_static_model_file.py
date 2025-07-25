@@ -94,8 +94,6 @@ adapter_conditions = ["FP:adapter 1-1,", "FP:adapter 1-2,", "FP:adapter 2-1,", "
 df.iloc[1:, 6] = df.iloc[1:].apply(lambda row: 1 if row[8] in adapter_conditions else row[6], axis=1)
 
 cl_df = pd.concat([df, bp_df], axis=0, ignore_index=True)
-cl_df.iloc[0, 1] = cl_df.iloc[0, 1].replace('inf', 'cl') # change the first row (model type) of whole new file 
-# save to new csv file
 cl_df.to_csv(output_file_path, index=False, header=False)
 
 print(f"New file generated: {output_file_path}")

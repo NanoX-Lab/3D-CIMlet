@@ -271,8 +271,6 @@ def main(config):
         #===== change chips order if needed end (e.g. move dynamic chips to the middle) =====#
         
         print("new_chip_list:",new_chip_list)
-        # print("new_chip_list.index(18):",new_chip_list.index(18))
-        # print("new_chip_list.index(9):",new_chip_list.index(9))
 
         for i in range(len(num_bits_src_chip_to_dest_chip)):
             for j in range(len(num_bits_src_chip_to_dest_chip[i])):
