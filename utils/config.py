@@ -356,11 +356,6 @@ class Config:
 			with open(self.model_filename, mode='r', newline='') as file:
 				csv_reader = csv.reader(file)
 				first_row = next(csv_reader)  # Read the first line to determine the model type
-				# if (first_row[1] in [
-        		# 		"Transformer_inf","Transformer_adapter_inf","Transformer_adapter_cl","Transformer_ft",
-                #         "BERT_base_inf","Gpt2_inf","Gpt2_inf","DeiT_inf",
-                #         "BERT_base_adapter_inf","BERT_base_adapter_cl","BERT_small_adapter_inf","BERT_small_adapter_cl",
-				# 		"BERT_base_ft"]):
 				if any(keyword in self.model_filename for keyword in(
         				"Transformer_inf","Transformer_adapter_inf","Transformer_adapter_cl","Transformer_ft",
                         "BERT_base_inf","Gpt2_inf","Gpt2_inf","DeiT_inf",
@@ -370,7 +365,7 @@ class Config:
 						row = row[:-1]
 						converted_row = [int(item) for item in row]
 						self.NetStructure.append(converted_row)  # Add each row to the NetStructure list
-					return self.NetStructure
+			return self.NetStructure
 		
 		except FileNotFoundError:
 			print(f"File '{self.model_filename}' not found.")
@@ -388,8 +383,8 @@ class Config:
 				"BERT_base_ft")):
 					for row in csv_reader:
 						row_def = row[-1]
-						self.NetStructure_layer_def.append(row_def)  # Add each row to the NetStructure list1
-					return self.NetStructure_layer_def
+						self.NetStructure_layer_def.append(row_def)  # Add each row to the NetStructure_layer_def list
+			return self.NetStructure_layer_def
 		
 		except FileNotFoundError:
 			print(f"File '{self.model_filename}' not found.")
