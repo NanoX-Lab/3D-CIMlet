@@ -392,14 +392,14 @@ def get_dest_layers(config,net_structure,netStructure_layer_def):
         to_bp_dest_layers = [[] for _ in range(len(net_structure))] # only init, not used in adapter_inf
         num_to_bp_transfer_byte_to_layer = [0 for _ in range(len(net_structure))] # only init, not used in adapter_inf
         for layer in range(len(net_structure)):
-            # generate K,Q
+            # generate K,V
             if ((layer % num_layers_per_T_layer == 0)and(layer != len(net_structure)-1)) or (layer % num_layers_per_T_layer == 1):
                 for head in range(num_T_head):
                     dest_layers[layer].append(3+head*2 + math.floor(layer/num_layers_per_T_layer)*num_layers_per_T_layer)
-            # generate V
+            # generate Q
             if (layer % num_layers_per_T_layer == 2):
                 for head in range(num_T_head):
-                    dest_layers[layer].append(2+head*2 + layer)      
+                    dest_layers[layer].append(1+head*2 + layer)      
             # K.QT        
             if (0 <= ((layer % num_layers_per_T_layer)-3)/2 <num_T_head) and ( ((layer % num_layers_per_T_layer)-3)%2 ==0):
                 dest_layers[layer].append(1 + layer)

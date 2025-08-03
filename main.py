@@ -90,7 +90,7 @@ def main(config):
     
     static_chiplet_layers, static_chiplet_availability_ratio, num_used_static_chiplet_all_layers,num_used_static_chiplet,num_used_semistatic_chiplet,chiplet_static_type,layer_location_begin_chiplet = get_static_chiplet_layers(config,NetStructure,NetStructure_layer_def,Num_StaticPE_eachLayer,num_static_chiplet_eachLayer)
 
-    # get Num of input Activation each Layer
+    # get Num of input, weight, output each Layer
     Num_In_eachLayer = []
     Num_Weight_eachLayer = []
     Num_Output_eachLayer = []
