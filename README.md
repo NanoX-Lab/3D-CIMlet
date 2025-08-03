@@ -1,6 +1,6 @@
 # 3D-CIMlet
 
-3D-CIMlet is a chiplet co-Design framework for teterogeneous in-memory acceleration of edge LLM inference and continual learning, developed by [Prof. Haitong Li's group](https://engineering.purdue.edu/NanoX/) (Purdue University). . The framework is made publicly available on a non-commercial basis. Copyright of the framework is maintained by the developers, and is distributed under the terms of the BSD-3-Clause License.
+3D-CIMlet is a chiplet co-design framework for heterogeneous in-memory acceleration of edge LLM inference and continual learning, developed by [Prof. Haitong Li's group](https://engineering.purdue.edu/NanoX/) (Purdue University). The framework is made publicly available on a non-commercial basis. Copyright of the framework is maintained by the developers, and is distributed under the terms of the BSD-3-Clause License.
 
 <!-- ---
 
