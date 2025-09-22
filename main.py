@@ -471,7 +471,7 @@ def main(config):
 
                                 bp_weight_storage_edram_energy_eachLayer[layer_idx] += num_this_layer_input_bit * num_refresh_times * refresh_power_per_bit * (100* 1/config.eDRAM_clk_freq)
 
-                            # sram has some availablity, store and refresh a part of this layer in eDRAM CIM, store others in eDRAM CIM 
+                            # sram has some availablity, store and refresh a part of this layer in SRAM, store others in eDRAM CIM 
                             elif available_sram_buffer_size_each_semistatic_chip[chip_idx] < num_this_layer_input_bit :
                                 # store a part in SRAM
                                 extra_bp_weight_storage_energy_eachLayer[layer_idx] += layers_process_latency_eachDestLayer[layer_idx] * buffer.get_leak_power() / (buffer.mem_width * buffer.mem_height) * available_sram_buffer_size_each_semistatic_chip[chip_idx]

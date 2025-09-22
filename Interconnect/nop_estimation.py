@@ -93,7 +93,10 @@ def nop_interconnect_estimation(config, num_used_static_chiplet_all_layers, num_
                     src_layer_idx, dest_layer_idx = map(int, run_info.split('_to_'))
                     
                     latencyCycle_eachLayer_list[src_layer_idx][dest_layer_idx] = latency
-    latencyCycle_eachLayer_list = [latency * scale for latency in latencyCycle_eachLayer_list]
+    latencyCycle_eachLayer_list = [
+        [val * scale for val in latency] 
+        for latency in latencyCycle_eachLayer_list
+    ]
 
     # return energy (not used)
     power_list = []
